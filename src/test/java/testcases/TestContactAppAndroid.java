@@ -32,8 +32,8 @@ public class TestContactAppAndroid {
         contactPage = new ContactPage(driver);
     }
 
-    @Test
-    public void test() throws InterruptedException {
+    @Test(priority = 1)
+    public void createANewContact() throws InterruptedException {
         // Q.1-4: Create a new contact
         contactPage.tapButton(btnCreateContact);
         contactPage.enterText(tbFirstName, "Ngoc");
@@ -63,7 +63,7 @@ public class TestContactAppAndroid {
         contactPage.scrollUntilVisible("Significant date");
         contactPage.tapButton(tbSignificantDate);
         contactPage.selectDate("month","Sep");
-        contactPage.selectDate("day","03");
+        contactPage.selectDate("day","06");
         contactPage.selectDate("year", "2023");
         contactPage.tapButton(btnSetCalendar);
     }

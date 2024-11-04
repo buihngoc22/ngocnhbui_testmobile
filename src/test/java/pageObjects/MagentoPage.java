@@ -1,116 +1,76 @@
 package pageObjects;
 
-import io.appium.java_client.AppiumBy;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import helper.ActionHelper;
+import org.openqa.selenium.*;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class MagentoPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
-
+public class MagentoPage extends ActionHelper {
     public MagentoPage(WebDriver driver) {
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        super(driver);
     }
 
-    public static final By btnCreateContact = AppiumBy.accessibilityId("Create contact");
-    public static final By btnSave = AppiumBy.id("com.google.android.contacts:id/toolbar_button");
-    public static final By btnClosePopup = AppiumBy.accessibilityId("Close Popup Window");
-    public static final By btnBack = AppiumBy.accessibilityId("Navigate up");
-    public static final By lbCreatedContact = AppiumBy.xpath("//android.widget.TextView[@content-desc='Ngoc Bui']");
-    public static final By btnMoreOptions = AppiumBy.accessibilityId("More options");
-    public static final By btnDelete = AppiumBy.xpath("//android.widget.TextView[@text='Delete']");
-    public static final By btnConfirmDelete = AppiumBy.id("android:id/button1");
-    public static final By btnSetCalendar = AppiumBy.id("android:id/button1");
-    public static final By tbFirstName = AppiumBy.xpath("//android.widget.EditText[@text='First name']");
-    public static final By tbLastName = AppiumBy.xpath("//android.widget.EditText[@text='Last name']");
-    public static final By tbCompany = AppiumBy.xpath("//android.widget.EditText[@text='Company']");
-    public static final By tbPhone = AppiumBy.xpath("//android.widget.EditText[@text='Phone']");
-    public static final By tbEmail = AppiumBy.xpath("//android.widget.EditText[@text='Email']");
-    public static final By tbSignificantDate = AppiumBy.xpath("//android.widget.EditText[@text='Significant date']");
-    public static final By lbContactName = AppiumBy.id("com.google.android.contacts:id/large_title");
-    public static final By lbOrganization = AppiumBy.id("com.google.android.contacts:id/organization_name");
-    public static final By txtMobilePhone = AppiumBy.xpath("//android.widget.RelativeLayout[contains(@content-desc,'Call Mobile')]//android.widget.TextView[@resource-id='com.google.android.contacts:id/header']");
-    public static final By txtEmail = AppiumBy.xpath("//android.widget.RelativeLayout[contains(@content-desc,'Email Home')]//android.widget.TextView[@resource-id='com.google.android.contacts:id/header']");
-    public static final By txtContactList = AppiumBy.xpath("//android.widget.ListView[@resource-id='android:id/list']//android.view.ViewGroup");
+    public static final By btnMenu = By.xpath("//span[@data-action='toggle-nav']");
+    public static final By btnAddToCartInProductPage = By.id("product-addtocart-button");
+    public static final By btnMyCart = By.xpath("//a[@href='https://magento.softwaretestingboard.com/checkout/cart/']");
+    public static final By btnProceedToCheckout = By.xpath("//ul//button[@title='Proceed to Checkout']");
+    public static final By tbEmail = By.id("customer-email");
+    public static final By tbFirstName = By.xpath("//input[@name='firstname']");
+    public static final By tbLastName = By.xpath("//input[@name='lastname']");
+    public static final By tbStreetDress = By.xpath("//input[@name='street[0]']");
+    public static final By tbCity = By.xpath("//input[@name='city']");
+    public static final By tbPostCode = By.xpath("//input[@name='postcode']");
+    public static final By drdCountry = By.xpath("//select[@name='country_id']");
+    public static final By drdState = By.xpath("//select[@name='region_id']");
+    public static final By tbPhone = By.xpath("//input[@name='telephone']");
+    public static final By btnNext = By.xpath("//span[text()='Next']//parent::button");
+    public static final By btnPlaceOrder = By.xpath("//button[@title='Place Order']");
+    public static final By lbEmail = By.xpath("//span[@data-bind='text: getEmailAddress()']");
+    public static final By cbShippingMethod = By.xpath("//input[@value='flatrate_flatrate']");
+    public static final By btnViewCart = By.xpath("//a[contains(.,'View and Edit Cart')]");
+    public static final By lbProductTitle = By.xpath("//tr[@class='item-info']//div//a");
+    public static final By txQty = By.xpath("//input[@title='Qty']");
+    public static String btnAddToCart = "//a[contains(text(),'%s')]//ancestor::div[@class='product-item-info']//button";
+    public static String lbProductName = "//span[contains(.,'%s')]";
+    public static String productOptions = "//div[@attribute-code='%s']//div[@option-label='%s']";
+    public static String productDetails = "//dl[@class='item-options']//dt[text()='%s']//following-sibling::dd[1]";
+    public static String btnGender = "//span[text()='%s']//parent::a";
+    public static String btnProductType = "//span[text()='%s']//parent::a//following-sibling::ul//li//a[contains(.,'%s')]";
 
-    public void tapButton(By by) {
-        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
+    public void navigateToProductPage(String gender, String productType){
+        tapButton(btnMenu);
+        tapButton(By.xpath(String.format(btnGender, gender)));
+        tapButton(By.xpath(String.format(btnProductType, gender, productType)));
     }
 
-    public void enterText(By by, String value) {
-        wait.until(ExpectedConditions.elementToBeClickable(by)).sendKeys(value);
+    public void addProductToCart(String productName, String size, String color, String qty) {
+        tapButton(By.xpath(String.format(btnAddToCart, productName)));
+        waitForElementToBeVisible(By.xpath(String.format(lbProductName, productName)));
+        tapButton(By.xpath(String.format(productOptions, "size", size)));
+        tapButton(By.xpath(String.format(productOptions, "color", color)));
+        enterText(By.id("qty"), qty);
+        tapButton(btnAddToCartInProductPage);
     }
 
-    public void scrollUntilVisible(String visibleText) {
-        driver.findElement(AppiumBy.androidUIAutomator(
-                "new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().textContains(\"" + visibleText + "\").instance(0))"));
+    public void verifyProductsInCart(String productName, String size, String color, String qty){
+        tapButton(btnMyCart);
+        tapButton(btnViewCart);
+        scrollToView(lbProductTitle);
+        waitForTextToBe(lbProductTitle, "Neve Studio Dance Jacket");
+        verifyText(By.xpath(String.format(productDetails,"Size")), size);
+        verifyText(By.xpath(String.format(productDetails,"Color")), color);
+        verifyValue(txQty, qty);
     }
 
-    public void verifyText(By locator, String expectedText) {
-        WebElement element = driver.findElement(locator);
-        String actualText = element.getText();
-        if (actualText.contains(expectedText)) {
-            System.out.println("Text displays as expected: " + actualText);
-        } else {
-            System.out.println("Text does not display as expected. Expected: " + expectedText + ", but found: " + actualText);
-            throw new AssertionError("Text does not display as expected");
-        }
-    }
-
-    public void verifyContactIsDeleted(By locator) throws InterruptedException {
-        Thread.sleep(2000);
-        List<WebElement> elements = driver.findElements(locator);
-        if (elements.size() != 0) {
-            throw new AssertionError("Expected list to be empty, but found " + elements.size() + " elements.");
-        } else {
-            System.out.println("List is empty as expected.");
-        }
-    }
-
-    public void selectDate(String type, String date) {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        By lastMonth = By.xpath("//android.widget.Button[@text='Oct']");
-        By lastDay = By.xpath("//android.widget.Button[@text='" + String.format("%02d", yesterday.getDayOfMonth()) + "']");
-        By lastYear = By.xpath("//android.widget.Button[@text='2023']");
-        By selectDate = By.xpath("//android.widget.EditText[@resource-id='android:id/numberpicker_input' and @text='" + date + "']");
-        WebElement element;
-
-        if (type.equals("month")) {
-            element = driver.findElement(lastMonth);
-        } else if (type.equals("day")) {
-            element = driver.findElement(lastDay);
-        } else {
-            element = driver.findElement(lastYear);
-        }
-
-        int monthX = element.getLocation().getX();
-        int monthY = element.getLocation().getY();
-
-        while (driver.findElements(selectDate).isEmpty()) {
-            Map<String, Object> tapParams = new HashMap<>();
-            tapParams.put("x", monthX);
-            tapParams.put("y", monthY);
-            tapParams.put("count", 1);
-
-            ((JavascriptExecutor) driver).executeScript("mobile: clickGesture", tapParams);
-
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("Selected: " + type + " = " + date);
+    public void enterShippingAddress(String email, String firstName, String lastName, String streetAddress, String city, String state, String postcode, String country, String phoneNumber) {
+        waitForElementToBeVisible(By.xpath("//div[text()='Shipping Address']"));
+        scrollToView(tbEmail);
+        enterText(tbEmail, email);
+        enterText(tbFirstName, firstName);
+        enterText(tbLastName, lastName);
+        enterText(tbStreetDress, streetAddress);
+        enterText(tbCity, city);
+        selectOptionByVisibleText(drdState, state);
+        enterText(tbPostCode, postcode);
+        selectOptionByVisibleText(drdCountry, country);
+        enterText(tbPhone, phoneNumber);
     }
 }

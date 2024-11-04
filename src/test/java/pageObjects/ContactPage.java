@@ -1,26 +1,21 @@
 package pageObjects;
 
+import helper.ActionHelper;
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ContactPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
+public class ContactPage extends ActionHelper {
 
     public ContactPage(WebDriver driver) {
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        super(driver);
     }
 
     public static final By btnCreateContact = AppiumBy.accessibilityId("Create contact");
@@ -43,30 +38,6 @@ public class ContactPage {
     public static final By txtMobilePhone = AppiumBy.xpath("//android.widget.RelativeLayout[contains(@content-desc,'Call Mobile')]//android.widget.TextView[@resource-id='com.google.android.contacts:id/header']");
     public static final By txtEmail = AppiumBy.xpath("//android.widget.RelativeLayout[contains(@content-desc,'Email Home')]//android.widget.TextView[@resource-id='com.google.android.contacts:id/header']");
     public static final By txtContactList = AppiumBy.xpath("//android.widget.ListView[@resource-id='android:id/list']//android.view.ViewGroup");
-
-    public void tapButton(By by) {
-        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
-    }
-
-    public void enterText(By by, String value) {
-        wait.until(ExpectedConditions.elementToBeClickable(by)).sendKeys(value);
-    }
-
-    public void scrollUntilVisible(String visibleText) {
-        driver.findElement(AppiumBy.androidUIAutomator(
-                "new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().textContains(\"" + visibleText + "\").instance(0))"));
-    }
-
-    public void verifyText(By locator, String expectedText) {
-        WebElement element = driver.findElement(locator);
-        String actualText = element.getText();
-        if (actualText.contains(expectedText)) {
-            System.out.println("Text displays as expected: " + actualText);
-        } else {
-            System.out.println("Text does not display as expected. Expected: " + expectedText + ", but found: " + actualText);
-            throw new AssertionError("Text does not display as expected");
-        }
-    }
 
     public void verifyContactIsDeleted(By locator) throws InterruptedException {
         Thread.sleep(2000);
